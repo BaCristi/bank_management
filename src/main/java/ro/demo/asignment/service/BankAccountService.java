@@ -22,6 +22,8 @@ import java.util.UUID;
 public class BankAccountService {
     @NotNull
     private final BankAccountRepository bankAccountRepository;
+    @NotNull
+    private final BankAccountAuditService bankAccountAuditService;
 
     @Transactional
     public BankAccountResponseModel createBankAccount(final User savedUser) {
@@ -35,7 +37,9 @@ public class BankAccountService {
     }
 
     public BankAccountResponseModel getBalanceForAccount(final String email, final String accountName) {
-        return mapToModel(this.getBankAccount(email,accountName));
+        final BankAccount bankAccount = this.getBankAccount(email, accountName);
+        bankAccountAuditService.saveCheckoutAudit(bankAccount);
+        return mapToModel(bankAccount);
     }
 
     private BankAccountResponseModel mapToModel(final BankAccount savedBankAccount) {
@@ -47,21 +51,25 @@ public class BankAccountService {
     }
 
     @Transactional
-    public BankAccountResponseModel deposit(final BankAccountDepositRequest request) {
+    public BankAccountResponseModel depositFunds(final BankAccountDepositRequest request) {
         return bankAccountRepository
                 .findByUserEmailAndAccountName(request.getEmail(), request.getAccountName())
-                .map(bankAccount -> updateBalance(request, bankAccount))
+                .map(bankAccount -> {
+                    final BankAccount modifiedBankAccount = updateBalance(request, bankAccount);
+                    bankAccountAuditService.saveDepositAudit(modifiedBankAccount.getUser(), bankAccount, request.getDepositQuantity());
+                    return modifiedBankAccount;
+                })
                 .map(this::mapToModel)
                 .orElseThrow(BankAccountNotFoundException::new);
     }
 
     private BankAccount updateBalance(final BankAccountDepositRequest request, final BankAccount bankAccount) {
         bankAccount.setBalance(bankAccount.getBalance() + request.getDepositQuantity());
-        return bankAccountRepository.save(bankAccount);
+        return bankAccount;
     }
 
     @Transactional
-    public List<BankAccountResponseModel> transfer(final BankAccountTransferRequest request) {
+    public List<BankAccountResponseModel> transferFunds(final BankAccountTransferRequest request) {
         final BankAccount bankAccountSource = getBankAccount(request.getEmail(), request.getAccountNameSource());
         final BankAccount bankAccountDestination = getBankAccount(request.getEmail(), request.getAccountNameDestination());
 
@@ -72,6 +80,9 @@ public class BankAccountService {
 
         bankAccountDestination.setBalance(bankAccountDestination.getBalance() + request.getTransferQuantity());
         bankAccountSource.setBalance(bankAccountSource.getBalance() - request.getTransferQuantity());
+
+        bankAccountAuditService.saveTransferAudit(bankAccountDestination.getUser(), bankAccountDestination,
+                bankAccountSource, request.getTransferQuantity());
 
         return Arrays.asList(mapToModel(bankAccountSource), mapToModel(bankAccountDestination));
     }

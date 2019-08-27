@@ -8,13 +8,15 @@ import javax.persistence.*;
 @Data
 @Entity
 @NoArgsConstructor
-public class BankAccount extends AbstractAuditable{
+public class BankAccountDepositAudit extends AbstractAuditable{
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-    private String accountName;
-    private Integer balance;
+    @ManyToOne
+    @JoinColumn(name = "bank_account_id")
+    private BankAccount bankAccount;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    private Integer deposited;
 }

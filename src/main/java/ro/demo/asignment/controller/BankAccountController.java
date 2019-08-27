@@ -7,7 +7,7 @@ import ro.demo.asignment.entity.User;
 import ro.demo.asignment.model.BankAccountDepositRequest;
 import ro.demo.asignment.model.BankAccountResponseModel;
 import ro.demo.asignment.model.BankAccountTransferRequest;
-import ro.demo.asignment.model.EmailRequest;
+import ro.demo.asignment.model.GenericEmailRequestModel;
 import ro.demo.asignment.service.BankAccountService;
 import ro.demo.asignment.validator.UserExistsValidator;
 
@@ -26,7 +26,7 @@ public class BankAccountController {
 
     @PostMapping("/create")
     public ResponseEntity<BankAccountResponseModel> createBankAccount(
-            @RequestBody @Valid final EmailRequest request){
+            @RequestBody @Valid final GenericEmailRequestModel request){
         final User user = userExistsValidator.checkIfUserExists(request.getEmail());
         return ResponseEntity.ok(bankAccountService.createBankAccount(user));
     }
@@ -40,12 +40,12 @@ public class BankAccountController {
     @PostMapping("/balance/deposit")
     public ResponseEntity<BankAccountResponseModel> depositInBankAccount(
             @RequestBody @Valid final BankAccountDepositRequest request){
-        return ResponseEntity.ok(bankAccountService.deposit(request));
+        return ResponseEntity.ok(bankAccountService.depositFunds(request));
     }
 
     @PostMapping("/balance/transfer")
     public ResponseEntity<List<BankAccountResponseModel>> transferToBankAccount(
             @RequestBody @Valid final BankAccountTransferRequest request){
-        return ResponseEntity.ok(bankAccountService.transfer(request));
+        return ResponseEntity.ok(bankAccountService.transferFunds(request));
     }
 }
