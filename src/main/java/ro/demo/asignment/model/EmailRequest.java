@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 @Setter
 @Getter
-public class RegisterUserRequest {
+public class EmailRequest {
     @Email(message = "Email should be valid")
     @Size(min = 5, max = 255, message
             = "Must be between 5 and 255 characters")
