@@ -15,7 +15,6 @@ public class UserExistsValidator {
     private final UserRepository userRepository;
 
     public User checkIfUserExists(final String email) {
-        return userRepository
-                .findByEmail(email).orElseThrow(() -> new UserNotFoundException("email"));
+        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 }

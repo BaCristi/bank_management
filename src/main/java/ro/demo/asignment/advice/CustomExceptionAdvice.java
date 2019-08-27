@@ -3,6 +3,7 @@ package ro.demo.asignment.advice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ro.demo.asignment.exception.BankAccountBalanceInsufficientException;
 import ro.demo.asignment.exception.BankAccountNotFoundException;
 import ro.demo.asignment.exception.NotUniqueException;
 import ro.demo.asignment.exception.UserNotFoundException;
@@ -17,22 +18,30 @@ import static java.util.Collections.singletonMap;
 public class CustomExceptionAdvice {
     private static final String USER_ALREADY_REGISTERED = "User already registered.";
     private static final String USER_NOT_REGISTERED = "User not registered.";
+    private static final String BANK_ACCOUNT_NOT_FOUND = "Bank account not found";
+    private static final String NOT_ENOUGH_FUNDS = "Not enough funds";
 
     @ExceptionHandler(NotUniqueException.class)
     public ResponseEntity<Map<String, List<String>>> notUniqueException(final NotUniqueException e) {
         return ResponseEntity.badRequest()
-                .body(singletonMap(e.getField(), singletonList(USER_ALREADY_REGISTERED)));
+                .body(singletonMap("message", singletonList(USER_ALREADY_REGISTERED)));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Map<String, List<String>>> userNotRegisteredException(final UserNotFoundException e) {
         return ResponseEntity.badRequest()
-                .body(singletonMap(e.getField(), singletonList(USER_NOT_REGISTERED)));
+                .body(singletonMap("message", singletonList(USER_NOT_REGISTERED)));
     }
 
     @ExceptionHandler(BankAccountNotFoundException.class)
     public ResponseEntity<Map<String, List<String>>> bankAccountNotFoundException(final BankAccountNotFoundException e) {
         return ResponseEntity.badRequest()
-                .body(singletonMap(e.getField(), singletonList("Bank account not found")));
+                .body(singletonMap("message", singletonList(BANK_ACCOUNT_NOT_FOUND)));
+    }
+
+    @ExceptionHandler(BankAccountBalanceInsufficientException.class)
+    public ResponseEntity<Map<String, List<String>>> bankAccountNotFoundException(final BankAccountBalanceInsufficientException e) {
+        return ResponseEntity.badRequest()
+                .body(singletonMap("message", singletonList(NOT_ENOUGH_FUNDS)));
     }
 }

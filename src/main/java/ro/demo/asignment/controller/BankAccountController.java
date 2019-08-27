@@ -6,12 +6,14 @@ import org.springframework.web.bind.annotation.*;
 import ro.demo.asignment.entity.User;
 import ro.demo.asignment.model.BankAccountDepositRequest;
 import ro.demo.asignment.model.BankAccountResponseModel;
+import ro.demo.asignment.model.BankAccountTransferRequest;
 import ro.demo.asignment.model.EmailRequest;
 import ro.demo.asignment.service.BankAccountService;
 import ro.demo.asignment.validator.UserExistsValidator;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RestController
 @RequestMapping("/bankAccount")
@@ -42,8 +44,8 @@ public class BankAccountController {
     }
 
     @PostMapping("/balance/transfer")
-    public ResponseEntity<BankAccountResponseModel> transferToBankAccount(
-            @RequestBody @Valid final BankAccountDepositRequest request){
-        return ResponseEntity.ok(bankAccountService.deposit(request));
+    public ResponseEntity<List<BankAccountResponseModel>> transferToBankAccount(
+            @RequestBody @Valid final BankAccountTransferRequest request){
+        return ResponseEntity.ok(bankAccountService.transfer(request));
     }
 }

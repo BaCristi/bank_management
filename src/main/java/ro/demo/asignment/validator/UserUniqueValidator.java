@@ -16,7 +16,7 @@ public class UserUniqueValidator {
     public void checkUserExists(final String email) {
         final boolean userWithEmailExists = userRepository.existsByEmail(email);
         if (userWithEmailExists){
-            throw new NotUniqueException("email");
+            throw new NotUniqueException();
         }
     }
 }
