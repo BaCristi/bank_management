@@ -2,11 +2,9 @@ package ro.demo.asignment.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ro.demo.asignment.entity.User;
+import ro.demo.asignment.model.BankAccountDepositRequest;
 import ro.demo.asignment.model.BankAccountResponseModel;
 import ro.demo.asignment.model.EmailRequest;
 import ro.demo.asignment.service.BankAccountService;
@@ -31,4 +29,21 @@ public class BankAccountController {
         return ResponseEntity.ok(bankAccountService.createBankAccount(user));
     }
 
+    @GetMapping("/balance")
+    public ResponseEntity<BankAccountResponseModel> getAccountBankBalance(@RequestParam final String email,
+                                                                          @RequestParam final String accountName){
+        return ResponseEntity.ok(bankAccountService.getBalanceForAccount(email,accountName));
+    }
+
+    @PostMapping("/balance/deposit")
+    public ResponseEntity<BankAccountResponseModel> depositInBankAccount(
+            @RequestBody @Valid final BankAccountDepositRequest request){
+        return ResponseEntity.ok(bankAccountService.deposit(request));
+    }
+
+    @PostMapping("/balance/transfer")
+    public ResponseEntity<BankAccountResponseModel> transferToBankAccount(
+            @RequestBody @Valid final BankAccountDepositRequest request){
+        return ResponseEntity.ok(bankAccountService.deposit(request));
+    }
 }

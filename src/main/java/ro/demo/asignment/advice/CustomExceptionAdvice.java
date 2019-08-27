@@ -3,6 +3,7 @@ package ro.demo.asignment.advice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ro.demo.asignment.exception.BankAccountNotFoundException;
 import ro.demo.asignment.exception.NotUniqueException;
 import ro.demo.asignment.exception.UserNotFoundException;
 
@@ -27,5 +28,11 @@ public class CustomExceptionAdvice {
     public ResponseEntity<Map<String, List<String>>> userNotRegisteredException(final UserNotFoundException e) {
         return ResponseEntity.badRequest()
                 .body(singletonMap(e.getField(), singletonList(USER_NOT_REGISTERED)));
+    }
+
+    @ExceptionHandler(BankAccountNotFoundException.class)
+    public ResponseEntity<Map<String, List<String>>> bankAccountNotFoundException(final BankAccountNotFoundException e) {
+        return ResponseEntity.badRequest()
+                .body(singletonMap(e.getField(), singletonList("Bank account not found")));
     }
 }
