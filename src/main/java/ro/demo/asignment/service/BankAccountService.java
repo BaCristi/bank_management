@@ -3,13 +3,13 @@ package ro.demo.asignment.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ro.demo.asignment.entity.BankAccount;
-import ro.demo.asignment.entity.BankAccountRepository;
 import ro.demo.asignment.entity.User;
 import ro.demo.asignment.exception.BankAccountBalanceInsufficientException;
 import ro.demo.asignment.exception.BankAccountNotFoundException;
 import ro.demo.asignment.model.BankAccountDepositRequest;
 import ro.demo.asignment.model.BankAccountResponseModel;
 import ro.demo.asignment.model.BankAccountTransferRequest;
+import ro.demo.asignment.repository.BankAccountRepository;
 
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
@@ -34,19 +34,16 @@ public class BankAccountService {
         return mapToModel(savedBankAccount);
     }
 
+    public BankAccountResponseModel getBalanceForAccount(final String email, final String accountName) {
+        return mapToModel(this.getBankAccount(email,accountName));
+    }
+
     private BankAccountResponseModel mapToModel(final BankAccount savedBankAccount) {
         return new BankAccountResponseModel(savedBankAccount.getAccountName(), savedBankAccount.getBalance());
     }
 
     private String generateUniqueAccountName(final User savedUser) {
         return savedUser.getEmail().split("@")[0] + "_" + UUID.randomUUID().toString().substring(0, 7);
-    }
-
-    public BankAccountResponseModel getBalanceForAccount(final String email, final String accountName) {
-        return bankAccountRepository
-                .findByUserEmailAndAccountName(email, accountName)
-                .map(this::mapToModel)
-                .orElseThrow(BankAccountNotFoundException::new);
     }
 
     @Transactional
@@ -65,14 +62,11 @@ public class BankAccountService {
 
     @Transactional
     public List<BankAccountResponseModel> transfer(final BankAccountTransferRequest request) {
-        final BankAccount bankAccountSource = bankAccountRepository
-                .findByUserEmailAndAccountName(request.getEmail(), request.getAccountNameSource())
-                .orElseThrow(BankAccountNotFoundException::new);
-        final BankAccount bankAccountDestination = bankAccountRepository
-                .findByUserEmailAndAccountName(request.getEmail(), request.getAccountNameDestination())
-                .orElseThrow(BankAccountNotFoundException::new);
+        final BankAccount bankAccountSource = getBankAccount(request.getEmail(), request.getAccountNameSource());
+        final BankAccount bankAccountDestination = getBankAccount(request.getEmail(), request.getAccountNameDestination());
 
-        if (bankAccountSource.getBalance() < request.getTransferQuantity()) {
+        final boolean hasInsufficientFunds = bankAccountSource.getBalance() < request.getTransferQuantity();
+        if (hasInsufficientFunds) {
             throw new BankAccountBalanceInsufficientException();
         }
 
@@ -80,5 +74,11 @@ public class BankAccountService {
         bankAccountSource.setBalance(bankAccountSource.getBalance() - request.getTransferQuantity());
 
         return Arrays.asList(mapToModel(bankAccountSource), mapToModel(bankAccountDestination));
+    }
+
+    private BankAccount getBankAccount(final String email, final String accountName) {
+        return bankAccountRepository
+                .findByUserEmailAndAccountName(email, accountName)
+                .orElseThrow(BankAccountNotFoundException::new);
     }
 }
