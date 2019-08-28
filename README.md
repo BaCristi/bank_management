@@ -96,6 +96,7 @@ curl -X GET \
 	"email": "cristi@mail.com",
 	"accountName" : "cristi_643ee06" 
 }'
+
 Response
 
 {
