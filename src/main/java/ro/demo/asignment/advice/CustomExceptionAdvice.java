@@ -3,10 +3,7 @@ package ro.demo.asignment.advice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ro.demo.asignment.exception.BankAccountBalanceInsufficientException;
-import ro.demo.asignment.exception.BankAccountNotFoundException;
-import ro.demo.asignment.exception.NotUniqueException;
-import ro.demo.asignment.exception.UserNotFoundException;
+import ro.demo.asignment.exception.*;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +17,7 @@ public class CustomExceptionAdvice {
     private static final String USER_NOT_REGISTERED = "User not registered.";
     private static final String BANK_ACCOUNT_NOT_FOUND = "Bank account not found";
     private static final String NOT_ENOUGH_FUNDS = "Not enough funds";
+    public static final String CAN_T_TRANSFER_TO_THE_SAME_BANK_ACCOUNT = "Can't transfer to the same bank account";
 
     @ExceptionHandler(NotUniqueException.class)
     public ResponseEntity<Map<String, List<String>>> notUniqueException(final NotUniqueException e) {
@@ -43,5 +41,11 @@ public class CustomExceptionAdvice {
     public ResponseEntity<Map<String, List<String>>> bankAccountNotFoundException(final BankAccountBalanceInsufficientException e) {
         return ResponseEntity.badRequest()
                 .body(singletonMap("message", singletonList(NOT_ENOUGH_FUNDS)));
+    }
+
+    @ExceptionHandler(EqualAccountsException.class)
+    public ResponseEntity<Map<String, List<String>>> accountAreEqualException(final EqualAccountsException e) {
+        return ResponseEntity.badRequest()
+                .body(singletonMap("message", singletonList(CAN_T_TRANSFER_TO_THE_SAME_BANK_ACCOUNT)));
     }
 }

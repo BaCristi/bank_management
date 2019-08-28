@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.demo.asignment.entity.User;
+import ro.demo.asignment.exception.EqualAccountsException;
 import ro.demo.asignment.model.BankAccountDepositRequest;
 import ro.demo.asignment.model.BankAccountResponseModel;
 import ro.demo.asignment.model.BankAccountTransferRequest;
@@ -46,6 +47,9 @@ public class BankAccountController {
     @PostMapping("/balance/transfer")
     public ResponseEntity<List<BankAccountResponseModel>> transferToBankAccount(
             @RequestBody @Valid final BankAccountTransferRequest request){
+        if (request.getAccountNameSource().equalsIgnoreCase(request.getAccountNameDestination())){
+           throw new EqualAccountsException();
+        }
         return ResponseEntity.ok(bankAccountService.transferFunds(request));
     }
 }
