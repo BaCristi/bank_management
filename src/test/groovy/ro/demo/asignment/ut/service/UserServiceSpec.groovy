@@ -18,13 +18,14 @@ class UserServiceSpec extends Specification {
          given:
          def email =  new GenericEmailRequestModel()
          email.setEmail("asd")
+        def user = UserGenerator.aUser(id:null,email:"asd")
 
          when:
          userService.registerUser(email)
 
          then:
-         1 * userRepository.save(_) >> _
-         1 * bankAccountService.createBankAccount(_) >> _
+         1 * userRepository.save(user) >> UserGenerator.aUser(id:1,email:"asd")
+         1 * bankAccountService.createBankAccount(UserGenerator.aUser(id:1,email:"asd")) >> _
          0 * _
      }
 }
