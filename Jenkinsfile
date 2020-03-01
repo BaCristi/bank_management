@@ -1,6 +1,5 @@
-def label = "backend-builder-${UUID.randomUUID().toString()}"
 
-podTemplate(label: label,
+podTemplate(label: "label",
   containers: [
     containerTemplate(name: 'maven', image: 'maven:3.5-jdk-8', ttyEnabled: true, command: 'cat'),
     containerTemplate(name: 'docker', image: 'docker:17.12', ttyEnabled: true, command: 'cat'),
@@ -24,13 +23,12 @@ podTemplate(label: label,
   def imageName = "backend"
   def imageVersion = "v${env.BUILD_NUMBER}"
 
-  node(label) {
+  node() {
 
       // Execute test suite
       stage('Test') {
         container('maven') {
-          bat 'mvn -Dmaven.repo.local=/usr/.m2/repository --settings=settings.xml clean dependency:resolve'
-          bat 'mvn -Dmaven.repo.local=/usr/.m2/repository --settings=settings.xml test'
+          bat 'mvn clean install'
         }
        }
   }
