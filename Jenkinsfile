@@ -1,4 +1,6 @@
-podTemplate(label: "label",
+def label = "builder-${UUID.randomUUID().toString()}"
+
+podTemplate(label: label,
   containers: [
     containerTemplate(name: 'maven', image: 'maven:3.5-jdk-8', ttyEnabled: true, command: 'cat'),
     containerTemplate(name: 'docker', image: 'docker:17.12', ttyEnabled: true, command: 'cat'),
