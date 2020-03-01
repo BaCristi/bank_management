@@ -16,7 +16,7 @@ podTemplate(label: label,
   ],
   volumes: [
     hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
-    hostPathVolume(hostPath: '/var/prod-config-daemonset/', mountPath: '/var/prod-config-daemonset/')
+    hostPathVolume(hostPath: '/var/config-daemonset/', mountPath: '/var/config-daemonset/')
   ]
   ) {
 
@@ -24,7 +24,6 @@ podTemplate(label: label,
   def imageVersion = "v${env.BUILD_NUMBER}"
 
   node(label) {
-    try {
 
       // Execute test suite
       stage('Test') {
@@ -32,10 +31,7 @@ podTemplate(label: label,
           sh 'mvn -Dmaven.repo.local=/usr/.m2/repository --settings=settings.xml clean dependency:resolve'
           sh 'mvn -Dmaven.repo.local=/usr/.m2/repository --settings=settings.xml test'
         }
-      }
 
       }
-    } catch (e) {
-    }
   }
 }
