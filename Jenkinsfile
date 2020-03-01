@@ -4,6 +4,7 @@ podTemplate(label: label,
   containers: [
     containerTemplate(name: 'maven', image: 'maven:3.5-jdk-8', ttyEnabled: true, command: 'cat'),
     containerTemplate(name: 'docker', image: 'docker:17.12', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true),
     containerTemplate(name: 'mysql', image: 'mysql:5.7', envVars: [
       envVar(key: 'MYSQL_ROOT_PASSWORD', value: 'admin'),
       envVar(key: 'MYSQL_DATABASE', value: 'admin'),
@@ -24,6 +25,7 @@ podTemplate(label: label,
   def imageVersion = "v${env.BUILD_NUMBER}"
 
   node(label) {
+    try {
 
       // Execute test suite
       stage('Test') {
@@ -31,7 +33,10 @@ podTemplate(label: label,
           sh 'mvn -Dmaven.repo.local=/usr/.m2/repository --settings=settings.xml clean dependency:resolve'
           sh 'mvn -Dmaven.repo.local=/usr/.m2/repository --settings=settings.xml test'
         }
-
       }
+
+    } catch (e) {
+      slackSend channel: "#tech", color: "#FF9FA1", message: "${imageName}:${imageVersion} build and deploy updated to FAILED"
+    }
   }
 }
