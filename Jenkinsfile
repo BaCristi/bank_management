@@ -8,13 +8,13 @@ node {
   bat " mvn clean install -DskipTests"
 
   stage 'Test'
-  def splits = splitTests parallelism: [$class: 'CountDrivenParallelism', size: 4], generateInclusions: false
+  def splits = splitTests parallelism: [$class: 'CountDrivenParallelism', size: 4], generateInclusions: true
 
     echo "${splits}"
     /* Create dictionary to hold set of parallel test executions. */
     def testGroups = [:]
 
-    for (int i = 0; i < splits.size(); i++) {
+    for (int i = 0; i < 5; i++) {
       def split = splits[i]
 
       /* Loop over each record in splits to prepare the testGroups that we'll run in parallel. */
