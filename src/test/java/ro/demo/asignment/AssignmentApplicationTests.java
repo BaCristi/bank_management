@@ -17,4 +17,11 @@ public class AssignmentApplicationTests {
     public void contextLoads() {
     }
 
+    @Test
+    public void contextLoads2() {
+        System.out.println(true);
+
+
+    }
+
 }
