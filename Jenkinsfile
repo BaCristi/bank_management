@@ -34,7 +34,6 @@ node {
 
           /* Write includesFile or excludesFile for tests.  Split record provided by splitTests. */
           /* Tell Maven to read the appropriate file. */
-          echo split
           if (split.includes) {
             writeFile file: "target/parallel-test-includes-${i}.txt", text: split.list.join("\n")
             mavenInstall += " -Dsurefire.includesFile=target/parallel-test-includes-${i}.txt"
@@ -43,7 +42,6 @@ node {
             mavenInstall += " -Dsurefire.excludesFile=target/parallel-test-excludes-${i}.txt"
           }
 
-        echo mavenInstall
           /* Call the Maven build with tests. */
           bat mavenInstall
 
