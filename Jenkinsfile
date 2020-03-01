@@ -10,7 +10,7 @@ node {
   stage 'Test'
   def splits = splitTests parallelism: [$class: 'CountDrivenParallelism', size: 4], generateInclusions: true
 
-echo splits
+    echo "${splits}"
     /* Create dictionary to hold set of parallel test executions. */
     def testGroups = [:]
 
