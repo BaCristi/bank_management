@@ -46,7 +46,7 @@ node {
           bat mavenInstall
 
           /* Archive the test results */
-          junit '**/target/surefire-reports/TEST-*.xml'
+          junit 'TEST-*.xml'
         }
       }
     }
