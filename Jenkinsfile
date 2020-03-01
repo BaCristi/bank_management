@@ -1,16 +1,37 @@
-pipeline { 
-    agent any  
-    stages {
-       stage ('Build') {
-          agent {
-               docker {
-               image 'mysql/mysql-server'
-               args '--name some-mysql -e MYSQL_ROOT_PASSWORD=password -d'
-               }
-          }
-          steps {
-              bat 'mvn clean install'
-          }
-      }
-    }
+def label = "backend-builder-${UUID.randomUUID().toString()}"
+
+podTemplate(label: label,
+  containers: [
+    containerTemplate(name: 'maven', image: 'maven:3.5-jdk-8', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'docker', image: 'docker:17.12', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true),
+    containerTemplate(name: 'mysql', image: 'mysql:5.7', envVars: [
+      envVar(key: 'MYSQL_ROOT_PASSWORD', value: 'voilait2root'),
+      envVar(key: 'MYSQL_DATABASE', value: 'voilait2'),
+      envVar(key: 'MYSQL_USER', value: 'voilait2'),
+      envVar(key: 'MYSQL_PASSWORD', value: 'voilait2')
+    ],
+    ports: [
+      portMapping(name: 'mysql', containerPort: 3306, hostPort: 3306)
+    ])
+  ],
+  volumes: [
+    hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
+    hostPathVolume(hostPath: '/var/config-daemonset/', mountPath: '/var/config-daemonset/')
+  ]
+  ) {
+
+  def imageName = "backend"
+  def imageVersion = "v${env.BUILD_NUMBER}"
+
+  node(label) {
+
+      // Execute test suite
+      stage('Test') {
+        container('maven') {
+          bat 'mvn -Dmaven.repo.local=/usr/.m2/repository --settings=settings.xml clean dependency:resolve'
+          bat 'mvn -Dmaven.repo.local=/usr/.m2/repository --settings=settings.xml test'
+        }
+       }
+  }
 }
