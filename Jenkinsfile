@@ -1,9 +1,21 @@
 node {
     checkout scm
 
-    stage('Test') {
-        container('maven') {
-          bat 'mvn clean install'
+     stages {
+            stage('Build stage') {
+                steps {
+                    bat 'mvn -B clean verify'
+                }
+            }
+            stage('Test stage') {
+                steps {
+                    bat 'mvn test'
+                }
+            }
+            stage('Package stage') {
+                steps {
+                    bat 'mvn package'
+                }
+            }
         }
-      }
 }
