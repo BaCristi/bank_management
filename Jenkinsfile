@@ -5,7 +5,7 @@ node {
   stage 'Build'
 
   /* Call the Maven build without tests. */
-  mvn "clean install -DskipTests"
+  bat " mvn clean install -DskipTests"
 
   stage 'Test'
   def splits = splitTests parallelism: [$class: 'CountDrivenParallelism', size: 4], generateInclusions: true
@@ -28,9 +28,9 @@ node {
           checkout scm
 
           /* Clean each test node to start. */
-          mvn 'clean'
+          bat ' mvn clean'
 
-          def mavenInstall = 'install -DMaven.test.failure.ignore=true'
+          def mavenInstall = 'mvn install -DMaven.test.failure.ignore=true'
 
           /* Write includesFile or excludesFile for tests.  Split record provided by splitTests. */
           /* Tell Maven to read the appropriate file. */
@@ -43,7 +43,7 @@ node {
           }
 
           /* Call the Maven build with tests. */
-          mvn mavenInstall
+          bat mavenInstall
 
           /* Archive the test results */
           junit '**/target/surefire-reports/TEST-*.xml'
