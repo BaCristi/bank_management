@@ -1,24 +1,9 @@
-pipeline {
-    agent any
-
-    stages {
-        stage('Build') {
-            steps {
-                bat 'mvn -B -DskipTests clean package'
-            }
-        }
-        stage('Test') { 
-            agent {
-                docker {
-                image 'mysql/mysql-server'
-                args '--name some-mysql -e MYSQL_ROOT_PASSWORD=password -d'}
-            }
-            steps {
-                bat 'mvn test -DforkCount=0'
-                bat '''
-                    docker exec some-mysql bat -c 'exec mysql < ./db/dump.sql
-                    '''
-            }
-        }
+node {
+    checkout scm
+    /*
+     * In order to communicate with the MySQL server, this Pipeline explicitly
+     * maps the port (`3306`) to a known port on the host machine.
+     */
+    docker.image('mysql:5').withRun('-e "MYSQL_ROOT_PASSWORD=my-secret-pw" -p 3306:3306') { c ->
     }
 }
