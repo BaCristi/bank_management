@@ -1,4 +1,3 @@
-
 podTemplate(label: "label",
   containers: [
     containerTemplate(name: 'maven', image: 'maven:3.5-jdk-8', ttyEnabled: true, command: 'cat'),
@@ -23,7 +22,7 @@ podTemplate(label: "label",
   def imageName = "backend"
   def imageVersion = "v${env.BUILD_NUMBER}"
 
-  node() {
+  node(label) {
 
       // Execute test suite
       stage('Test') {
