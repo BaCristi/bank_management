@@ -1,12 +1,23 @@
-def label = "backend-builder-${UUID.randomUUID().toString()}"
-
-  node(label) {
-
-      // Execute test suite
-      stage('Test') {
-        container('maven') {
-          sh 'mvn -Dmaven.repo.local=/usr/.m2/repository --settings=settings.xml clean dependency:resolve'
-          sh 'mvn -Dmaven.repo.local=/usr/.m2/repository --settings=settings.xml test'
-        }
-  }
+pipeline { 
+    agent any  
+    stages {
+      stage ('Initialize') {
+                steps {
+                    sh '''
+                        echo "PATH = ${PATH}"
+                        echo "M2_HOME = ${M2_HOME}"
+                    '''
+                }
+            }
+       stage ('Build') {
+                  steps {
+                      sh 'mvn -Dmaven.test.failure.ignore=true install'
+                  }
+                  post {
+                      success {
+                          junit 'target/surefire-reports/**/*.xml'
+                      }
+                  }
+              }
+    }
 }
