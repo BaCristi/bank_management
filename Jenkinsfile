@@ -46,7 +46,7 @@ node {
           bat mavenInstall
 
           /* Archive the test results */
-          junit 'TEST-*.xml'
+          junit '**/test-results/TEST-*.xml'
         }
       }
     }
