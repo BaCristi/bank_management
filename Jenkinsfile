@@ -45,8 +45,6 @@ node {
           /* Call the Maven build with tests. */
           bat mavenInstall
 
-          /* Archive the test results */
-          junit '**/target/surefire-reports/TEST-*.xml'
         }
       }
     }
