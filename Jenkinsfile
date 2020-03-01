@@ -30,7 +30,7 @@ node {
           /* Clean each test node to start. */
           bat ' mvn clean'
 
-          def mavenInstall = 'mvn install -DMaven.test.failure.ignore=true'
+          def mavenInstall = 'mvn install -DMaven.test.failure.ignore=true surefire-report:report '
 
           /* Write includesFile or excludesFile for tests.  Split record provided by splitTests. */
           /* Tell Maven to read the appropriate file. */
