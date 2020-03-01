@@ -13,7 +13,7 @@ node {
     /* Create dictionary to hold set of parallel test executions. */
     def testGroups = [:]
 
-    for (int i = 0; i < splits.size(); i++) {
+    for (int i = 0; i < 5; i++) {
       def split = splits[i]
 
       /* Loop over each record in splits to prepare the testGroups that we'll run in parallel. */
